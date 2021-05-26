@@ -3,6 +3,7 @@ package com.devsuperior.dscatalog.entities;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -14,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import com.devsuperior.dscatalog.dto.CategoryDTO;
 
 @Entity
 @Table( name= "tb_product")
@@ -110,7 +113,15 @@ public class Product implements Serializable {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
+/*	
+	public List<Category> getCategories() {
+		return categories;
+	}
 
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+*/	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -127,6 +138,10 @@ public class Product implements Serializable {
 			return false;
 		return true;
 	}
+
 	
+	public Set<Category> getCategories() {
+		return categories;
+	}
 	
 }
