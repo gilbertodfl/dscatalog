@@ -113,11 +113,11 @@ public class Product implements Serializable {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-/*	
-	public List<Category> getCategories() {
+	public Set<Category> getCategories() {
 		return categories;
 	}
-
+	
+/*
 	public void setCategories(List<Category> categories) {
 		this.categories = categories;
 	}
@@ -140,8 +140,6 @@ public class Product implements Serializable {
 	}
 
 	
-	public Set<Category> getCategories() {
-		return categories;
-	}
+
 	
 }

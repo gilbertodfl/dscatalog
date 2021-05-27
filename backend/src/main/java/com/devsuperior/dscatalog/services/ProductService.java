@@ -13,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsuperior.dscatalog.dto.CategoryDTO;
 import com.devsuperior.dscatalog.dto.ProductDTO;
-
+import com.devsuperior.dscatalog.entities.Category;
 import com.devsuperior.dscatalog.entities.Product;
+import com.devsuperior.dscatalog.repositories.CategoryRepository;
 import com.devsuperior.dscatalog.repositories.ProductRepository;
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -29,7 +31,8 @@ import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 public class ProductService {
 	@Autowired
 	private ProductRepository repository; 
-	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	@Transactional( readOnly = true )
 	public Page<ProductDTO> findAllPaged( PageRequest pageRequest){
 		Page<Product> list = repository.findAll( pageRequest);
@@ -39,13 +42,11 @@ public class ProductService {
 	public ProductDTO findById(Long id) {
 		Optional<Product> obj = repository.findById(id);
 		Product entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-	//	return new ProductDTO(entity );
 		return new ProductDTO(entity, entity.getCategories() );
 	}
 	@Transactional
 	public ProductDTO insert(ProductDTO dto) {
 		Product entity = new Product();
-		// vai mudar entity.setName( dto.getName());
 		entity = repository.save(entity);
 		return new ProductDTO( entity);
 	}
@@ -54,13 +55,27 @@ public class ProductService {
 		// com o getOnde você ainda não vai no banco, poupando o acesso
 		try {
 			Product entity = repository.getOne(id);
-			// vai mudar entity.setName(dto.getName());
+			copyDtoToEntity ( dto, entity);
 			entity = repository.save( entity );
 			return new ProductDTO( entity );
 		}
 		catch(EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found " + id );
 		}
+	}
+	private void copyDtoToEntity(ProductDTO dto, Product entity) {
+		entity.setName(dto.getName());
+		entity.setDescription(dto.getDescription());
+		entity.setDate( dto.getDate());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setPrice(dto.getPrice());
+		
+		entity.getCategories().clear();
+		for ( CategoryDTO catDto: dto.getCategories()) {
+			Category category = categoryRepository.getOne(catDto.getId()); 
+			entity.getCategories().add(category);
+		}
+		
 	}
 	public void delete(Long id) {
 		try {
